@@ -1,5 +1,9 @@
 package com.example.ui.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +23,17 @@ import jakarta.validation.Valid;
 @RequestMapping("/users")
 public class UserController {
 
+    Map<String, UserRest> users;
+
     @GetMapping(path = "/{userId}", produces = {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<UserRest> getUser(@PathVariable String userId) {
-        UserRest returnValue = new UserRest();
-        returnValue.setEmail("test@test.com");
-        returnValue.setFirstName("Leo");
-        returnValue.setLastName("Sun");
-
-        return new ResponseEntity<>(returnValue, HttpStatus.OK);
+        if (users.containsKey(userId)) {
+            return new ResponseEntity<>(users.get(userId), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     @PostMapping(consumes = {
@@ -43,6 +48,14 @@ public class UserController {
         returnValue.setEmail(userDetails.getEmail());
         returnValue.setFirstName(userDetails.getFirstName());
         returnValue.setLastName(userDetails.getLastName());
+
+        String userId = UUID.randomUUID().toString();
+        returnValue.setUserId(userId);
+
+        if (users == null) {
+            users = new HashMap<>();
+        }
+        users.put(userId, returnValue);
 
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
