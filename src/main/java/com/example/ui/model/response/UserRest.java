@@ -1,4 +1,4 @@
-package com.example.ui.response;
+package com.example.ui.model.response;
 
 public class UserRest {
     private String firstName;
